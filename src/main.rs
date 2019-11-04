@@ -15,10 +15,11 @@ use std::io;
 use std::io::Write;
 use std::path::Path;
 // use std::process;
+#[macro_use]
 extern crate simple_xml_serialize;
 extern crate simple_xml_serialize_macro;
-// use simple_xml_serialize::XMLElement;
-// use simple_xml_serialize_macro::xml_element;
+use simple_xml_serialize::XMLElement;
+use simple_xml_serialize_macro::xml_element;
 use yaserde::ser::to_string;
 use yaserde::*;
 #[macro_use]
@@ -41,25 +42,27 @@ struct BulletCSV {
     macro_name: String,
     class: String,
     component: String,
-    // bullet_speed: String,
-    // bullet_lifetime: String,
-    // bullet_amount: String,
-    // bullet_barrelamount: String,
-    // bullet_icon: String,
-    // bullet_timediff: String,
-    // bullet_angle: String,
-    // bullet_maxhits: String,
-    // bullet_ricochet: String,
-    // bullet_scale: String,
-    // bullet_attach: String,
-    // heat_value: String,
-    // reload_rate: String,
-    // damage_value: String,
-    // damage_shield: String,
-    // damage_repair: String,
-    // impact: String,
-    // launch: String,
-    // weapon_system: String,
+    ammo_value: String,
+    ammo_reload: String,
+    bullet_speed: String,
+    bullet_lifetime: String,
+    bullet_amount: String,
+    bullet_barrelamount: String,
+    bullet_icon: String,
+    bullet_timediff: String,
+    bullet_angle: String,
+    bullet_maxhits: String,
+    bullet_ricochet: String,
+    bullet_scale: String,
+    bullet_attach: String,
+    heat_value: String,
+    reload_rate: String,
+    damage_value: String,
+    damage_shield: String,
+    damage_repair: String,
+    impact: String,
+    launch: String,
+    weapon_system: String,
 }
 
 #[derive(YaSerialize, PartialEq, Debug)]
@@ -93,36 +96,41 @@ impl Default for SubStruct {
 
 //   }
 // }
+mod export_bullet;
 mod test_bullet;
 fn main() {
-    assert_eq!(
-        SubStruct::default(),
-        SubStruct {
-            subitem: "".to_string(),
-            text: "".to_string(),
-        }
-    );
-    let model = XmlStruct {
-        item: "something".to_string(),
-        sub_struct: SubStruct {
-            subitem: "sub_something".to_string(),
-            text: "text_content".to_string(),
-        },
-    };
-     let mut buffer = vec![];
+    // assert_eq!(
+    //     SubStruct::default(),
+    //     SubStruct {
+    //         subitem: "".to_string(),
+    //         text: "".to_string(),
+    //     }
+    // );
+    // let model = XmlStruct {
+    //     item: "something".to_string(),
+    //     sub_struct: SubStruct {
+    //         subitem: "sub_something".to_string(),
+    //         text: "text_content".to_string(),
+    //     },
+    // };
 
-    buffer.write_all(model.item.as_bytes()).unwrap();
+    //  let mut buffer = vec![];
+
+    // buffer.write_all(model.item.as_bytes()).unwrap();
     // let mut buffer = File::create("foo.txt").unwrap();
     // buffer.write(b"hello").unwrap();
-    let mut serializer = ser::Serializer::new_from_writer(buffer);
+    // let mut serializer = ser::Serializer::new_from_writer(buffer);
     // ser::serialize_with_writer(&buffer, buffer);
-    yaserde::YaSerialize::serialize(&serializer, model);
+    // yaserde::YaSerialize::serialize(&serializer, model);
+
+    // let text = ser::Serializer::write(&mut serializer, model).unwrap();
+    // let text = write_all(&buffer).unwrap();
 
     // Writes some prefix of the byte string, not necessarily all of it.
     // yaserde::YaSerialize::serialize(writer: &mut ser::Serializer<W>)
     // yaserde::YaSerialize::serialize(buffer, &mut ser::Serializer<W>).;
     // let content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><base Item=\"something\"><sub sub_item=\"sub_something\">text_content</sub></base>";
-    println!("{:?}", model);
+    // println!("{:?}", text);
 
     // option<macro> to struct
     // struct to csv
@@ -139,14 +147,16 @@ fn main() {
         for entry in fs::read_dir(&in_path).expect("ERROR! - read_dir") {
             let file = entry.expect("ERROR! - unwrapping entry");
             let file_path = file.path();
+
             // println!("{:?}", file_path);
 
             let mut xml_parsed: test_bullet::TestBullet = serde_xml_rs::from_str(
                 &fs::read_to_string(&file_path).expect("ERROR! - xml_parsed read_to_string"),
             )
             .unwrap_or_default();
+
             // let my_point_xml = XMLElement::from(&xml_parsed);
-            println!("{:?}", xml_parsed);
+            // println!("{:?}", xml_parsed);
             // println!("{:#?}", my_point_xml);
             // println!("{:#?}", &xml_parsed);
             // let mut csv_struct: BulletCSV = BulletCSV {
@@ -178,16 +188,201 @@ fn main() {
             //     // weapon_system: xml_parsed.r#macro.properties.weapon.system.clone(),
             // };
             wtr.serialize(BulletCSV {
-                macro_name: none_default(xml_parsed.clone().r#macro.unwrap_or_default().name),
-                class: none_default(xml_parsed.clone().r#macro.unwrap_or_default().class),
-                component: none_default(
+                macro_name: xml_parsed.clone().r#macro.name,
+                class: xml_parsed.clone().r#macro.class,
+                component: none_default(xml_parsed.clone().r#macro.component.r#ref),
+                ammo_value: none_default(
                     xml_parsed
                         .clone()
                         .r#macro
+                        .properties
+                        .ammunition
                         .unwrap_or_default()
-                        .component
+                        .value,
+                ),
+                ammo_reload: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .ammunition
+                        .unwrap_or_default()
+                        .reload,
+                ),
+                bullet_speed: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .speed,
+                ),
+                bullet_lifetime: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .lifetime,
+                ),
+                bullet_amount: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .amount,
+                ),
+                bullet_barrelamount: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .barrelamount,
+                ),
+                bullet_icon: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .icon,
+                ),
+                bullet_timediff: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .timediff,
+                ),
+                bullet_angle: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .angle,
+                ),
+                bullet_maxhits: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .maxhits,
+                ),
+                bullet_ricochet: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .ricochet,
+                ),
+                bullet_scale: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .scale,
+                ),
+                bullet_attach: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .bullet
+                        .unwrap_or_default()
+                        .attach,
+                ),
+                heat_value: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .heat
+                        .unwrap_or_default()
+                        .value,
+                ),
+                reload_rate: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .reload
+                        .unwrap_or_default()
+                        .rate,
+                ),
+                damage_value: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .damage
+                        .unwrap_or_default()
+                        .value,
+                ),
+                damage_shield: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .damage
+                        .unwrap_or_default()
+                        .shield,
+                ),
+                damage_repair: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .damage
+                        .unwrap_or_default()
+                        .repair,
+                ),
+                impact: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .effects
+                        .unwrap_or_default()
+                        .impact
                         .unwrap_or_default()
                         .r#ref,
+                ),
+                launch: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .effects
+                        .unwrap_or_default()
+                        .launch
+                        .unwrap_or_default()
+                        .r#ref,
+                ),
+                weapon_system: none_default(
+                    xml_parsed
+                        .clone()
+                        .r#macro
+                        .properties
+                        .weapon
+                        .unwrap_or_default()
+                        .system,
                 ),
             })
             .unwrap();
@@ -199,7 +394,7 @@ fn main() {
 fn none_default(string: Option<String>) -> String {
     let mut string = string;
     if string == None {
-        string = serde::export::Some("palceholder".to_string());
+        string = serde::export::Some("placeholder".to_string());
     }
     string.unwrap()
 }
