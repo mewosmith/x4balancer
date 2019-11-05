@@ -1,20 +1,20 @@
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
-pub struct TestBullet {
-    pub r#macro: TestBulletMacro,
+pub struct ImportBullet {
+    pub r#macro: ImportBulletMacro,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
-pub struct TestBulletMacro {
+pub struct ImportBulletMacro {
     pub name: String,
     pub class: String,
-    pub component: TestCompRef,
-    pub properties: TestBulletProperties,
+    pub component: ImportCompRef,
+    pub properties: ImportBulletProperties,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
-pub struct TestCompRef {
+pub struct ImportCompRef {
     pub r#ref: Option<String>,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
-pub struct TestBulletProperties {
+pub struct ImportBulletProperties {
     pub ammunition: Option<Ammunition>,
     pub bullet: Option<Bullet>,
     pub heat: Option<Heat>,
@@ -22,6 +22,8 @@ pub struct TestBulletProperties {
     pub damage: Option<Damage>,
     pub effects: Option<Effects>,
     pub weapon: Option<Weapon>,
+    pub areadamage: Option<AreaDamage>,
+    pub sounds: Option<Sounds>,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct Ammunition {
@@ -41,20 +43,34 @@ pub struct Bullet {
     pub ricochet: Option<String>,
     pub scale: Option<String>,
     pub attach: Option<String>,
+    pub range: Option<String>,
+    pub restitution: Option<String>,
+    pub selfdestruct: Option<String>,
+    pub delay: Option<String>,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct Heat {
     pub value: Option<String>,
+    pub initial: Option<String>,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct Reload {
     pub rate: Option<String>,
+    pub time: Option<String>,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct Damage {
     pub value: Option<String>,
     pub shield: Option<String>,
     pub repair: Option<String>,
+    pub hull: Option<String>,
+    pub min: Option<String>,
+    pub max: Option<String>,
+    pub time: Option<String>,
+}
+#[derive(Deserialize, Serialize, Debug, Default, Clone)]
+pub struct AreaDamage {
+    pub value: Option<String>,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct Effects {
@@ -67,6 +83,14 @@ pub struct Impact {
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct Launch {
+    pub r#ref: Option<String>,
+}
+#[derive(Deserialize, Serialize, Debug, Default, Clone)]
+pub struct Sounds {
+    pub ambient: Option<Ambient>,
+}
+#[derive(Deserialize, Serialize, Debug, Default, Clone)]
+pub struct Ambient {
     pub r#ref: Option<String>,
 }
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]

@@ -1,0 +1,8 @@
+csv_file = "E:/Rust/Projects/csv_input_output/output_csv/x4_balancer.csv"
+output_csv = "E:/Rust/Projects/csv_input_output/output_csv"
+
+input_xml = "E:/Mod Stuff/X4 Extracted/2.5beta/assets/props/WeaponSystems/standard/macros"
+input_bullet = "E:/Mod Stuff/X4 Extracted/2.5beta/assets/fx/weaponFx/macros"
+export_xml = "E:/Rust/Projects/csv_input_output/output_xml"
+
+wares_file = "E:/Mod Stuff/X4 Extracted/2.5beta/libraries/wares.xml"
